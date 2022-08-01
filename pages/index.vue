@@ -10,15 +10,14 @@
   </div>
 </template>
 <script>
-import EventCard from '../components/EventCard.vue'
+import { mapState } from 'vuex'
+import EventCard from '@/components/EventCard.vue'
+
 export default {
   components: { EventCard },
-  async asyncData({ $axios, error }) {
+  async fetch({ store, error }) {
     try {
-      const { data } = await $axios.get('http://localhost:3000/events')
-      return {
-        events: data
-      }
+      await store.dispatch('events/fetchEvents')
     } catch (e) {
       error({
         statusCode: 503,
@@ -26,6 +25,9 @@ export default {
       })
     }
   },
+  computed: mapState({
+    events: (state) => state.events.events
+  }),
   head() {
     return {
       title: 'Event Listing'
